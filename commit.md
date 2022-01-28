@@ -17,3 +17,15 @@ v0.1.1
  - if button push, led on. if button pull, led off.
 ```
 
+
+
+v0.1.2
+
+```
+[v0.1.2] uart operation
+
+1. uart operation
+ - make uart operation
+ - make shell
+```
+
