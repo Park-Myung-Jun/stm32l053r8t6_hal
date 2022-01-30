@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#define SW_VERSION "v0.1.0"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -61,6 +61,10 @@ void Error_Handler(void);
 #define BLUE_BUTTON_Pin GPIO_PIN_13
 #define BLUE_BUTTON_GPIO_Port GPIOC
 #define BLUE_BUTTON_EXTI_IRQn EXTI4_15_IRQn
+#define UART_TX_Pin GPIO_PIN_2
+#define UART_TX_GPIO_Port GPIOA
+#define UART_RX_Pin GPIO_PIN_3
+#define UART_RX_GPIO_Port GPIOA
 #define LED_GREEN_Pin GPIO_PIN_5
 #define LED_GREEN_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
