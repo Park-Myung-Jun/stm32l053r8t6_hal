@@ -29,3 +29,56 @@ v0.1.2
  - make shell
 ```
 
+
+
+v0.1.3
+
+```
+[v0.1.3] shell operation
+
+1. shell operation
+ - work correctly usart init by using setvbuf
+ - cmd work by string parse
+ - shell command : reset, version, cls
+```
+
+
+
+v0.1.4
+
+```
+[v0.1.4] 
+
+1. 
+```
+
+
+
+v0.1.
+
+```
+[v0.1.] 
+
+1. 
+```
+
+
+
+v0.1.
+
+```
+[v0.1.] 
+
+1. 
+```
+
+
+
+v0.1.
+
+```
+[v0.1.] 
+
+1. 
+```
+

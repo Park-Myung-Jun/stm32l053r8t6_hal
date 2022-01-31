@@ -21,7 +21,12 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-uint8_t uart_rx[2];
+#include "shell.h"
+#include "main.h"
+
+#define RX_SIZE 1
+
+uint8_t uart_rx[RX_SIZE];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart2;
@@ -117,39 +122,33 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+//https://modoocode.com/62
 void usart_init(void)
 {
-  HAL_UART_Receive_IT(&huart2, &uart_rx[0], 1);
+  setvbuf(stdout, NULL, _IONBF, 1024);
+  HAL_UART_Receive_IT(&huart2, uart_rx, RX_SIZE);
 }
 
-uint8_t* usart_get_rx(void)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  return &uart_rx[0];
+  if(huart->Instance == USART2)
+  {
+    shell_operation(uart_rx[0]); //printf("%c", uart_rx);
+    if(HAL_UART_Receive_IT(&huart2, uart_rx, RX_SIZE) != HAL_OK)
+    {
+      Error_Handler();
+    }
+  }
 }
 
-#if 1
-int _write(int fd, char *str, int len)
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-  for(int i=0; i<len; i++)
+  if(huart->Instance == USART2)
   {
-    HAL_UART_Transmit(&huart2, (uint8_t *)&str[i], 1, 0xFFFF);
-  }
-
-  return len;
-}
-#else
-int _write(int file, char *ptr, int len)
-{
-  if(HAL_UART_Transmit_IT(&huart2, (uint8_t*)ptr, len) == HAL_OK)
-  {
-    return 0;
-  }
-  else
-  {
-    return -1;
+    printf("uart2 error callback\r\n");
+    Error_Handler();
   }
 }
-#endif
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -106,3 +106,34 @@ edge detection은 rising/falling 둘다 받도록 하여 버튼이 push, pull �
 
 
 동작 시나리오는 button을 누르면 led가 켜지고, button을 떼면 led가 꺼지도록 구성을 하였다.
+
+
+
+## USART
+
+![evboard_usart](C:\git\stm32l053r8t6_hal\image\evboard_usart.png)
+
+ev-board의 경우는 기본적으로 USART2가 virtual COM port로 사용이 가능하다고 나와있다.
+
+![schematic_usart](C:\git\stm32l053r8t6_hal\image\schematic_usart.png)
+
+schematic을 보면 PA2, PA3로 STLK_TX, STLK_RX가 연결되어있는것을 확인 가능하고, 이는 ioc에서 usart2를 설정하면 사용한 핀들이다
+
+![ioc_usart_add](C:\git\stm32l053r8t6_hal\image\ioc_usart_add.png)
+
+![ioc_usart_setting](C:\git\stm32l053r8t6_hal\image\ioc_usart_setting.png)
+
+다음과 같이 usart2를 설정하여 PA2, PA3를 활성화 시키고 인터럽트로 usart를 받기 위해 NVIC settings에서 Enabled를 설정한다.
+
+먼저 HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 함수를 통해 키 입력을 통해 동작하는 것을 확인한다. pritnf로 출력을 하기 위해서 _write함수를 재정의 해야한다. HAL_UART_Transmit함수를 사용하여 재정의를 하면 printf 출력이 usart로 변경이 된다. 특히, 여기서 개행을 해줘야 출력이 가능한데, 버퍼 설정을 setvbuf함수를 통해 해줘야 shell 동작을 항상 개행 없이 가능하다. 
+
+setvbuf(stdout, NULL, _IONBF, 1024) 설정을 통해 버퍼 없이 동작하도록 하여 입력시마다 출력이 되도록 만들어주고 shell 동작을 구현하였다.
+
+나중에 있을 usb cdc 동작과 shell 동작의 연계를 위해 따로 shell파일와 usart파일을 구분하였다.
+
+shell 명령어의 경우 기본으로 현재의 버전 확인, reset, cls동작을 추가하였다.
+
+
+
+## TIMER
+

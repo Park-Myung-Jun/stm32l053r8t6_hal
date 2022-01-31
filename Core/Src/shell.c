@@ -4,10 +4,10 @@
  * date : 2022.01.24
  */
 
-#include <stdio.h>
 #include <string.h>
 #include "shell.h"
 #include "main.h"
+#include "usart.h"
 
 #define BUFFER_MAX 64
 
@@ -18,6 +18,7 @@ typedef struct _tsShellList {
 
 void cmd_reset(uint8_t argc, void* argv);
 void cmd_version(uint8_t argc, void* argv);
+void cmd_clear(uint8_t argc, void* argv);
 void cmd_parse(void);
 
 uint8_t buffer_idx = 0;
@@ -25,7 +26,23 @@ char shell_buffer[BUFFER_MAX];
 tsShellList cmd_list[] = {
   {"reset", cmd_reset},
   {"version", cmd_version},
+  {"cls", cmd_clear},
 };
+
+void cmd_reset(uint8_t argc, void* argv)
+{
+  NVIC_SystemReset();
+}
+
+void cmd_version(uint8_t argc, void* argv)
+{
+  printf("sw_version : %s\r\n", SW_VERSION);
+}
+
+void cmd_clear(uint8_t argc, void* argv)
+{
+  printf("\e[1;1H\e[2J");
+}
 
 void shell_operation(uint8_t rx)
 {
@@ -36,23 +53,32 @@ void shell_operation(uint8_t rx)
       return;
     }
 
+    printf("%c", rx);
     shell_buffer[buffer_idx] = rx;
     buffer_idx++;
   }
-  else if(rx == '\r' || rx == '\n')
+  else if(rx == '\r' || rx == '\n') // rx : 13(\r)
   {
+    printf(CRLF);
+
     cmd_parse();
 
     memset(shell_buffer, 0, BUFFER_MAX);
     buffer_idx = 0;
+
+    printf(PROMPT);
   }
   else if(rx == '\b')
   {
-    printf("\b ");
-    buffer_idx--;
-  }
+    if(buffer_idx == 0)
+    {
+      return;
+    }
 
-  printf("%c", rx);
+    printf("\b \b");
+    buffer_idx--;
+    shell_buffer[buffer_idx] = 0;
+  }
 }
 
 void cmd_parse(void)
@@ -91,12 +117,13 @@ void cmd_parse(void)
   }
 }
 
-void cmd_reset(uint8_t argc, void* argv)
+// https://sinoroo.tistory.com/entry/STM32-HAL-UART-Receive
+int _write(int file, char *ptr, int len)
 {
-  NVIC_SystemReset();
-}
+  for(int i=0; i<len; i++)
+  {
+    HAL_UART_Transmit(&huart2, (uint8_t *)&ptr[i], 1, 0xFFFF); //HAL_UART_Transmit_IT(&huart2, (uint8_t*)ptr, len); -> error
+  }
 
-void cmd_version(uint8_t argc, void* argv)
-{
-  print("sw_version : %s\r\n", SW_VERSION);
+  return len;
 }

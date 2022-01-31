@@ -195,14 +195,5 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     button_interrupt_callback();
   }
 }
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if(huart->Instance == USART2)
-  {
-    shell_operation(*usart_get_rx());
-    HAL_UART_Receive_IT(&huart2, usart_get_rx(), 1);
-  }
-}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

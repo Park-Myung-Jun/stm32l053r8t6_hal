@@ -26,8 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-
+#include "shell.h"
 #include "led.h"
 #include "button.h"
 #include "usart.h"
@@ -99,25 +98,15 @@ int main(void)
   led_init();
   button_init();
   usart_init();
+
+  printf(CRLF SHELL_GREEN "[system] " SHELL_RESET "Module init end");
+  printf(CRLF SHELL_GREEN "[version] " SHELL_RESET "SW_VERSION : %s\r\n" PROMPT, SW_VERSION);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-#if 0
-    led_on();
-    HAL_Delay(500);
-    led_off();
-    HAL_Delay(500);
-#elif 0
-    printf("Hello\r\n");
-    HAL_Delay(10);
-    printf("Bye, %d\r\n", 1234);
-    HAL_Delay(990);
-#else
-
-#endif
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -188,6 +177,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+    printf("Error Handler\r\n");
+    NVIC_SystemReset();
   }
   /* USER CODE END Error_Handler_Debug */
 }
