@@ -26,6 +26,7 @@
 #include "button.h"
 #include "usart.h"
 #include "shell.h"
+#include "timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -134,7 +135,8 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  HAL_SYSTICK_Callback();
+  timer_callback();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -194,6 +196,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   {
     button_interrupt_callback();
   }
+}
+
+void HAL_SYSTICK_Callback(void)
+{
+  
 }
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

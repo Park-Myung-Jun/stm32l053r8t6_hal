@@ -16,9 +16,10 @@ typedef struct _tsShellList {
   void (*func)(uint8_t, void*);
 } tsShellList;
 
-void cmd_reset(uint8_t argc, void* argv);
-void cmd_version(uint8_t argc, void* argv);
+void cmd_test(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
+void cmd_version(uint8_t argc, void* argv);
+void cmd_reset(uint8_t argc, void* argv);
 void cmd_parse(void);
 
 uint8_t buffer_idx = 0;
@@ -27,7 +28,28 @@ tsShellList cmd_list[] = {
   {"reset", cmd_reset},
   {"version", cmd_version},
   {"cls", cmd_clear},
+  {"test", cmd_test},
 };
+
+void cmd_test(uint8_t argc, void* argv)
+{
+  char** list = argv; //printf("%d %s %s\r\n", argc, ((char**)argv)[0], ((char**)argv)[1]);
+
+  if(argc == 3)
+  {
+    if(!strcmp("timer", list[1]))
+    {
+      if(!strcmp("start", list[2]))
+      {
+        main_timer_start();
+      }
+      else if(!strcmp("stop", list[2]))
+      {
+        main_timer_stop();
+      }
+    }
+  }
+}
 
 void cmd_reset(uint8_t argc, void* argv)
 {
@@ -106,6 +128,8 @@ void cmd_parse(void)
       argc++;
     }
   }
+
+  argc++;
 
   for(uint8_t i=0; cmd_list[i].func != NULL; i++)
   {

@@ -47,9 +47,11 @@ v0.1.3
 v0.1.4
 
 ```
-[v0.1.4] 
+[v0.1.4] timer operation
 
-1. 
+1. timer operation
+ - operation by systick callback
+ - timer create/delete/start/stop
 ```
 
 

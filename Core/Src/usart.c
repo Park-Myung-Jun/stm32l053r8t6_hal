@@ -125,7 +125,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 //https://modoocode.com/62
 void usart_init(void)
 {
-  setvbuf(stdout, NULL, _IONBF, 1024);
+  setvbuf(stdout, NULL, _IONBF, 0);
   HAL_UART_Receive_IT(&huart2, uart_rx, RX_SIZE);
 }
 
