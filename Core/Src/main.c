@@ -30,6 +30,7 @@
 #include "led.h"
 #include "button.h"
 #include "usart.h"
+#include "timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,7 +61,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void main_callback(void);
 
+uint8_t main_timer;
 /* USER CODE END 0 */
 
 /**
@@ -98,6 +101,7 @@ int main(void)
   led_init();
   button_init();
   usart_init();
+  timer_init();
 
   printf(CRLF SHELL_GREEN "[system] " SHELL_RESET "Module init end");
   printf(CRLF SHELL_GREEN "[version] " SHELL_RESET "SW_VERSION : %s\r\n" PROMPT, SW_VERSION);
@@ -105,6 +109,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  timer_create(&main_timer, TIMER_TYPE_REPEAT, 500, main_callback);
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -163,7 +169,20 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void main_timer_start(void)
+{
+  timer_start(&main_timer);
+}
 
+void main_timer_stop(void)
+{
+  timer_stop(&main_timer);
+}
+
+void main_callback(void)
+{
+  printf("main callback\r\n");
+}
 /* USER CODE END 4 */
 
 /**

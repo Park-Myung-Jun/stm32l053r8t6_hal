@@ -137,3 +137,6 @@ shell 명령어의 경우 기본으로 현재의 버전 확인, reset, cls동작
 
 ## TIMER
 
+![systick_code](C:\git\stm32l053r8t6_hal\image\systick_code.png)
+
+다음과 같이 msec 단위로 불려지는 systick_callback에 timer_callback()을 불러 인터럽트 발생시 시간 조건이 되면 timer에 할당된 callback 함수를 부르도록 추가
