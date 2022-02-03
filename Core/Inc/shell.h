@@ -23,4 +23,6 @@
 
 void shell_operation(uint8_t rx);
 
+// TO DO : log division - INFO, TEST etc...
+
 #endif /* shell.h */

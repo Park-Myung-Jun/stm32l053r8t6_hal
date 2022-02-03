@@ -17,7 +17,7 @@ void button_init(void)
 
 void button_interrupt_callback(void)
 {
-  GPIO_PinState button_pin = HAL_GPIO_ReadPin(BLUE_BUTTON_GPIO_Port, BLUE_BUTTON_Pin);
+  GPIO_PinState button_pin = HAL_GPIO_ReadPin(BUTTON_BLUE_GPIO_Port, BUTTON_BLUE_Pin);
 
   if(button_pin == GPIO_PIN_RESET)
   {
