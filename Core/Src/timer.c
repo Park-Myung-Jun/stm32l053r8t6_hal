@@ -4,22 +4,10 @@
  * date : 2022.02.02
  */
 
-#include <stdbool.h>
+#include <stdio.h>
 
 #include "stm32l0xx_hal.h"
 #include "timer.h"
-
-#define TIMER_SIZE 10
-
-typedef struct _tsTimer
-{
-  void (*callback)();
-  uint32_t time_interval;
-  uint32_t time_start;  
-  bool isOccupied;
-  bool isStarted;
-  teTimerType type;
-} tsTimer;
 
 tsTimer timer[TIMER_SIZE];
 uint8_t timer_size = 0U;
@@ -37,10 +25,11 @@ void timer_init(void)
   }
 }
 
-void timer_create(uint8_t* id, teTimerType type, uint32_t time, void (*callback)())
+void timer_create(uint8_t* id, teTimerType type, uint32_t time, void (*callback)(void))
 {
-  if(timer_size == TIMER_SIZE - 1)
+  if(timer_size == TIMER_SIZE)
   {
+    printf("timer full\r\n");
     return;
   }
 
@@ -57,6 +46,8 @@ void timer_create(uint8_t* id, teTimerType type, uint32_t time, void (*callback)
       *id = i;
       timer_size++;
 
+      //printf("timer occupied : %d\r\n", i);
+
       return;
     }
   }  
@@ -66,6 +57,7 @@ void timer_delete(uint8_t* id)
 {
   if(timer_size == 0)
   {
+    printf("timer empty\r\n");
     return;
   }
 
@@ -89,6 +81,11 @@ void timer_stop(uint8_t* id)
 {
   timer[*id].isStarted = false;
   timer[*id].time_start = 0U;
+}
+
+tsTimer* timer_get_info(void)
+{
+  return timer;
 }
 
 void timer_callback(void)

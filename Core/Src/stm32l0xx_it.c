@@ -192,7 +192,7 @@ void USART2_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  if(GPIO_Pin == BLUE_BUTTON_Pin)
+  if(GPIO_Pin == BUTTON_BLUE_Pin)
   {
     button_interrupt_callback();
   }

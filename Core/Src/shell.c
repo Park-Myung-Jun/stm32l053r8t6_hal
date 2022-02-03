@@ -5,9 +5,13 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
+
 #include "shell.h"
 #include "main.h"
 #include "usart.h"
+#include "timer.h"
+#include "led.h"
 
 #define BUFFER_MAX 64
 
@@ -16,7 +20,8 @@ typedef struct _tsShellList {
   void (*func)(uint8_t, void*);
 } tsShellList;
 
-void cmd_test(uint8_t argc, void* argv);
+void cmd_led(uint8_t argc, void* argv);
+void cmd_timer(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
 void cmd_version(uint8_t argc, void* argv);
 void cmd_reset(uint8_t argc, void* argv);
@@ -28,24 +33,112 @@ tsShellList cmd_list[] = {
   {"reset", cmd_reset},
   {"version", cmd_version},
   {"cls", cmd_clear},
-  {"test", cmd_test},
+  {"timer", cmd_timer},
+  {"led", cmd_led},
 };
 
-void cmd_test(uint8_t argc, void* argv)
+void cmd_led(uint8_t argc, void* argv)
+{
+  char** list = argv;
+
+  ts_led_t* tmp_led = led_get_info();
+
+  if(argc == 1)
+  {
+    printf("state : %d, repeat : %d, time on : %ld, time off : %ld\r\n",
+      tmp_led->state, tmp_led->repeat, tmp_led->time_on, tmp_led->time_off);
+  }
+
+  if(argc == 2)
+  {
+    if(!strcmp("off", list[1]))
+    {
+      led_off(); //printf("led off\r\n");
+    }
+    else if(!strcmp("on", list[1]))
+    {
+      led_on(); //printf("led on\r\n");
+    }
+    else if(!strcmp("blk", list[1]))
+    {
+      led_blink(); //printf("led blink\r\n");
+    }
+    else if(!strcmp("dim", list[1]))
+    {
+      led_dimming(); //printf("led dimming\r\n");
+    }
+  }
+
+  if(argc == 3)
+    {
+      if(!strcmp("ton", list[1]))
+      {
+        tmp_led->time_on = atoi(list[2]);
+      }
+      else if(!strcmp("toff", list[1]))
+      {
+        tmp_led->time_off = atoi(list[2]);
+      }
+      else if(!strcmp("repeat", list[1]))
+      {
+        tmp_led->repeat = atoi(list[2]);
+      }
+    }
+}
+
+void cmd_timer(uint8_t argc, void* argv)
 {
   char** list = argv; //printf("%d %s %s\r\n", argc, ((char**)argv)[0], ((char**)argv)[1]);
 
+  if(argc == 1)
+  {
+    tsTimer* tmp_timer = timer_get_info();
+
+    for(uint8_t i = 0; i < TIMER_SIZE; i++)
+    {
+      printf("%d : %d %d %d %ld\r\n", i, tmp_timer[i].isOccupied,
+        tmp_timer[i].isStarted, tmp_timer[i].type, tmp_timer[i].time_interval);
+    }
+  }
+
   if(argc == 3)
   {
-    if(!strcmp("timer", list[1]))
+    if(!strcmp("start", list[1]))
     {
-      if(!strcmp("start", list[2]))
+      uint8_t num = atoi(list[2]);
+
+      switch(num)
       {
-        main_timer_start();
+        case 0:
+          main_timer_start();
+          break;
+        case 1:
+          main_timer_start2();
+          break;
+        case 2:
+          main_timer_start3();
+          break;
+        default:
+          break;
       }
-      else if(!strcmp("stop", list[2]))
+    }
+    else if(!strcmp("stop", list[1]))
+    {
+      uint8_t num = atoi(list[2]);
+
+      switch(num)
       {
-        main_timer_stop();
+        case 0:
+          main_timer_stop();
+          break;
+        case 1:
+          main_timer_stop2();
+          break;
+        case 2:
+          main_timer_stop3();
+          break;
+        default:
+          break;
       }
     }
   }

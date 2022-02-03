@@ -21,6 +21,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -62,8 +63,10 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void main_callback(void);
+void main_callback2(void);
+void main_callback3(void);
 
-uint8_t main_timer;
+uint8_t main_timer, main_timer2, main_timer3;
 /* USER CODE END 0 */
 
 /**
@@ -97,11 +100,12 @@ int main(void)
   MX_DMA_Init();
   MX_ADC_Init();
   MX_USART2_UART_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  timer_init();
   led_init();
   button_init();
   usart_init();
-  timer_init();
 
   printf(CRLF SHELL_GREEN "[system] " SHELL_RESET "Module init end");
   printf(CRLF SHELL_GREEN "[version] " SHELL_RESET "SW_VERSION : %s\r\n" PROMPT, SW_VERSION);
@@ -110,6 +114,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   timer_create(&main_timer, TIMER_TYPE_REPEAT, 500, main_callback);
+  timer_create(&main_timer2, TIMER_TYPE_REPEAT, 333, main_callback2);
+  timer_create(&main_timer3, TIMER_TYPE_REPEAT, 777, main_callback3);
 
   while (1)
   {
@@ -179,9 +185,39 @@ void main_timer_stop(void)
   timer_stop(&main_timer);
 }
 
+void main_timer_start2(void)
+{
+  timer_start(&main_timer2);
+}
+
+void main_timer_stop2(void)
+{
+  timer_stop(&main_timer2);
+}
+
+void main_timer_start3(void)
+{
+  timer_start(&main_timer3);
+}
+
+void main_timer_stop3(void)
+{
+  timer_stop(&main_timer3);
+}
+
 void main_callback(void)
 {
   printf("main callback\r\n");
+}
+
+void main_callback2(void)
+{
+  printf("main callback2\r\n");
+}
+
+void main_callback3(void)
+{
+  printf("main callback3\r\n");
 }
 /* USER CODE END 4 */
 

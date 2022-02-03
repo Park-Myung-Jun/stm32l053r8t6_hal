@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define SW_VERSION "v0.1.4"
+#define SW_VERSION "v0.1.5"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,9 +58,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BLUE_BUTTON_Pin GPIO_PIN_13
-#define BLUE_BUTTON_GPIO_Port GPIOC
-#define BLUE_BUTTON_EXTI_IRQn EXTI4_15_IRQn
+#define BUTTON_BLUE_Pin GPIO_PIN_13
+#define BUTTON_BLUE_GPIO_Port GPIOC
+#define BUTTON_BLUE_EXTI_IRQn EXTI4_15_IRQn
 #define UART_TX_Pin GPIO_PIN_2
 #define UART_TX_GPIO_Port GPIOA
 #define UART_RX_Pin GPIO_PIN_3
@@ -70,6 +70,10 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 void main_timer_start(void);
 void main_timer_stop(void);
+void main_timer_start2(void);
+void main_timer_stop2(void);
+void main_timer_start3(void);
+void main_timer_stop3(void);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
