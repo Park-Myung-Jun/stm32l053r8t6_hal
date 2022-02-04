@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-#define TIMER_SIZE 4
+#define TIMER_SIZE 5
 
 typedef enum _teTimerType
 {
