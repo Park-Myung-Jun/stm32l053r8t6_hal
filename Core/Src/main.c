@@ -21,8 +21,11 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "iwdg.h"
+#include "rtc.h"
 #include "tim.h"
 #include "usart.h"
+#include "wwdg.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -32,6 +35,7 @@
 #include "button.h"
 #include "usart.h"
 #include "timer.h"
+#include "low_power.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,8 +69,11 @@ void SystemClock_Config(void);
 void main_callback(void);
 void main_callback2(void);
 void main_callback3(void);
+void iwdg_callback(void);
+void wwdg_callback(void);
 
 uint8_t main_timer, main_timer2, main_timer3;
+uint8_t iwdg_timer, wwdg_timer;
 /* USER CODE END 0 */
 
 /**
@@ -101,6 +108,9 @@ int main(void)
   MX_ADC_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
+  MX_IWDG_Init();
+  MX_RTC_Init();
+  MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
   timer_init();
   led_init();
@@ -116,9 +126,37 @@ int main(void)
   timer_create(&main_timer, TIMER_TYPE_REPEAT, 500, main_callback);
   timer_create(&main_timer2, TIMER_TYPE_REPEAT, 333, main_callback2);
   timer_create(&main_timer3, TIMER_TYPE_REPEAT, 777, main_callback3);
+  timer_create(&iwdg_timer, TIMER_TYPE_REPEAT, 25000, iwdg_callback);
+  timer_create(&wwdg_timer, TIMER_TYPE_REPEAT, 55, wwdg_callback);
+  timer_start(&iwdg_timer);
+  timer_start(&wwdg_timer);
 
   while (1)
   {
+    if(low_power_get() == LOW_POWER_STOP)
+    {
+      HAL_SuspendTick();
+      __HAL_RCC_PWR_CLK_ENABLE();
+      HAL_PWREx_DisableLowPowerRunMode();
+      HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 65535, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
+
+      HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+
+      HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
+      SystemClock_Config();
+      HAL_ResumeTick();
+
+      MX_GPIO_Init();
+      MX_DMA_Init();
+      MX_ADC_Init();
+      MX_USART2_UART_Init();
+      MX_TIM2_Init();
+      MX_IWDG_Init();
+      MX_RTC_Init();
+      MX_WWDG_Init();
+
+      low_power_set(LOW_POWER_NONE);
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -142,9 +180,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLLMUL_4;
@@ -166,8 +205,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_RTC;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -218,6 +258,18 @@ void main_callback2(void)
 void main_callback3(void)
 {
   printf("main callback3\r\n");
+}
+
+void iwdg_callback(void)
+{
+  HAL_IWDG_Refresh(&hiwdg);
+  //printf("iwdg refresh!\r\n");
+}
+
+void wwdg_callback(void)
+{
+  HAL_WWDG_Refresh(&hwwdg);
+  //printf("wwdg refresh!\r\n");
 }
 /* USER CODE END 4 */
 

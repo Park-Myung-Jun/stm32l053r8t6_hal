@@ -12,6 +12,7 @@
 #include "usart.h"
 #include "timer.h"
 #include "led.h"
+#include "low_power.h"
 
 #define BUFFER_MAX 64
 
@@ -25,6 +26,7 @@ void cmd_timer(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
 void cmd_version(uint8_t argc, void* argv);
 void cmd_reset(uint8_t argc, void* argv);
+void cmd_sleep(uint8_t argc, void* argv);
 void cmd_parse(void);
 
 uint8_t buffer_idx = 0;
@@ -35,7 +37,17 @@ tsShellList cmd_list[] = {
   {"cls", cmd_clear},
   {"timer", cmd_timer},
   {"led", cmd_led},
+  {"sleep", cmd_sleep},
 };
+
+void cmd_sleep(uint8_t argc, void* argv)
+{
+  if(argc == 1)
+  {
+    printf("shell sleep\r\n");
+    low_power_set(LOW_POWER_STOP);
+  }
+}
 
 void cmd_led(uint8_t argc, void* argv)
 {
