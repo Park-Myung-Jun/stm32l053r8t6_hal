@@ -21,7 +21,12 @@
 #include "wwdg.h"
 
 /* USER CODE BEGIN 0 */
+#include "timer.h"
+#include "shell.h"
 
+uint8_t wwdg_timer;
+
+void wwdg_callback(void);
 /* USER CODE END 0 */
 
 WWDG_HandleTypeDef hwwdg;
@@ -73,7 +78,17 @@ void HAL_WWDG_MspInit(WWDG_HandleTypeDef* wwdgHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void wwdg_init(void)
+{
+  timer_create(&wwdg_timer, TIMER_TYPE_REPEAT, 48, wwdg_callback);
+  timer_start(&wwdg_timer);
+}
 
+void wwdg_callback(void)
+{
+  HAL_WWDG_Refresh(&hwwdg);
+  //printf("&"); //printf("wwdg refresh!\r\n");
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

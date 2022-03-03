@@ -40,7 +40,17 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef enum reset_cause
+{
+    RESET_CAUSE_UNKNOWN = 0,
+    RESET_CAUSE_LOW_POWER_RESET,
+    RESET_CAUSE_WINDOW_WATCHDOG_RESET,
+    RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET,
+    RESET_CAUSE_SOFTWARE_RESET,
+    RESET_CAUSE_POWER_ON_POWER_DOWN_RESET,
+    RESET_CAUSE_OPTION_BYTE_LOADER_RESET,
+    RESET_CAUSE_EXTERNAL_RESET_PIN_RESET,
+} reset_cause_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -69,11 +79,11 @@ void SystemClock_Config(void);
 void main_callback(void);
 void main_callback2(void);
 void main_callback3(void);
-void iwdg_callback(void);
-void wwdg_callback(void);
+
+char* main_reset_cause(void); // const char * main_reset_cause_name(reset_cause_t reset_cause);
 
 uint8_t main_timer, main_timer2, main_timer3;
-uint8_t iwdg_timer, wwdg_timer;
+
 /* USER CODE END 0 */
 
 /**
@@ -113,9 +123,14 @@ int main(void)
   MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
   timer_init();
+  iwdg_init();
+  wwdg_init();
   led_init();
   button_init();
   usart_init();
+
+  printf("System reset cause: %s", main_reset_cause());
+  __HAL_RCC_CLEAR_RESET_FLAGS();
 
   printf(CRLF SHELL_GREEN "[system] " SHELL_RESET "Module init end");
   printf(CRLF SHELL_GREEN "[version] " SHELL_RESET "SW_VERSION : %s\r\n" PROMPT, SW_VERSION);
@@ -126,37 +141,10 @@ int main(void)
   timer_create(&main_timer, TIMER_TYPE_REPEAT, 500, main_callback);
   timer_create(&main_timer2, TIMER_TYPE_REPEAT, 333, main_callback2);
   timer_create(&main_timer3, TIMER_TYPE_REPEAT, 777, main_callback3);
-  timer_create(&iwdg_timer, TIMER_TYPE_REPEAT, 25000, iwdg_callback);
-  timer_create(&wwdg_timer, TIMER_TYPE_REPEAT, 55, wwdg_callback);
-  timer_start(&iwdg_timer);
-  timer_start(&wwdg_timer);
 
   while (1)
   {
-    if(low_power_get() == LOW_POWER_STOP)
-    {
-      HAL_SuspendTick();
-      __HAL_RCC_PWR_CLK_ENABLE();
-      HAL_PWREx_DisableLowPowerRunMode();
-      HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 65535, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
-
-      HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-
-      HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-      SystemClock_Config();
-      HAL_ResumeTick();
-
-      MX_GPIO_Init();
-      MX_DMA_Init();
-      MX_ADC_Init();
-      MX_USART2_UART_Init();
-      MX_TIM2_Init();
-      MX_IWDG_Init();
-      MX_RTC_Init();
-      MX_WWDG_Init();
-
-      low_power_set(LOW_POWER_NONE);
-    }
+    low_power_operation();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -260,17 +248,111 @@ void main_callback3(void)
   printf("main callback3\r\n");
 }
 
-void iwdg_callback(void)
+void main_system_init(void)
 {
-  HAL_IWDG_Refresh(&hiwdg);
-  //printf("iwdg refresh!\r\n");
+  SystemClock_Config();
+  HAL_ResumeTick();
+
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_ADC_Init();
+  MX_USART2_UART_Init();
+  MX_TIM2_Init();
+  MX_IWDG_Init();
+  MX_RTC_Init();
 }
 
-void wwdg_callback(void)
+char* main_reset_cause(void)
 {
-  HAL_WWDG_Refresh(&hwwdg);
-  //printf("wwdg refresh!\r\n");
+  //reset_cause_t reset_cause;
+
+  if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST))
+  {
+    return "LOW_POWER_RESET"; // reset_cause = RESET_CAUSE_LOW_POWER_RESET;
+  }
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST))
+  {
+    return "WINDOW_WATCHDOG_RESET"; // reset_cause = RESET_CAUSE_WINDOW_WATCHDOG_RESET;
+  }
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST))
+  {
+    return "INDEPENDENT_WATCHDOG_RESET"; // reset_cause = RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET;
+  }
+  /* This reset is induced by calling the ARM CMSIS `NVIC_SystemReset()` function! */
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
+  {
+    return "SOFTWARE_RESET"; // reset_cause = RESET_CAUSE_SOFTWARE_RESET;
+  }
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_OBLRST))
+  {
+    return "OPTION_BYTE_LOADER_RESET"; // reset_cause = RESET_CAUSE_OPTION_BYTE_LOADER_RESET;
+  }
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST))
+  {
+    return "EXTERNAL_RESET_PIN_RESET"; // reset_cause = RESET_CAUSE_EXTERNAL_RESET_PIN_RESET;
+  }
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST))
+  {
+    return "POWER-ON_RESET (POR) / POWER-DOWN_RESET (PDR)"; // reset_cause = "POWER-ON_RESET (POR) / POWER-DOWN_RESET (PDR)";
+  }
+  else
+  {
+    return "UNKNOWN"; // reset_cause = RESET_CAUSE_UNKNOWN;
+  }
 }
+
+#if 0
+const char * main_reset_cause_name(reset_cause_t reset_cause)
+{
+  const char * reset_cause_name = "DEFAULT";
+
+  switch (reset_cause)
+  {
+    case RESET_CAUSE_UNKNOWN:
+    {
+      reset_cause_name = "UNKNOWN";
+    }
+      break;
+    case RESET_CAUSE_LOW_POWER_RESET:
+    {
+      reset_cause_name = "LOW_POWER_RESET";
+    }
+      break;
+    case RESET_CAUSE_WINDOW_WATCHDOG_RESET:
+    {
+      reset_cause_name = "WINDOW_WATCHDOG_RESET";
+    }
+      break;
+    case RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET:
+    {
+      reset_cause_name = "INDEPENDENT_WATCHDOG_RESET";
+    }
+      break;
+    case RESET_CAUSE_SOFTWARE_RESET:
+    {
+      reset_cause_name = "SOFTWARE_RESET";
+    }
+      break;
+    case RESET_CAUSE_POWER_ON_POWER_DOWN_RESET:
+    {
+      reset_cause_name = "POWER-ON_RESET (POR) / POWER-DOWN_RESET (PDR)";
+    }
+      break;
+    case RESET_CAUSE_OPTION_BYTE_LOADER_RESET:
+    {
+      reset_cause_name = "OPTION_BYTE_LOADER_RESET";
+    }
+      break;
+    case RESET_CAUSE_EXTERNAL_RESET_PIN_RESET:
+    {
+      reset_cause_name = "EXTERNAL_RESET_PIN_RESET";
+    }
+      break;
+  }
+
+  return reset_cause_name;
+}
+#endif
 /* USER CODE END 4 */
 
 /**

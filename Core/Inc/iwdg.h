@@ -40,7 +40,9 @@ extern IWDG_HandleTypeDef hiwdg;
 void MX_IWDG_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void iwdg_init(void);
+void iwdg_timer_start(void);
+void iwdg_timer_stop(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

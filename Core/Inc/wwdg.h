@@ -40,7 +40,7 @@ extern WWDG_HandleTypeDef hwwdg;
 void MX_WWDG_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void wwdg_init(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

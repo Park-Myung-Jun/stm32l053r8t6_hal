@@ -21,7 +21,12 @@
 #include "iwdg.h"
 
 /* USER CODE BEGIN 0 */
+#include "timer.h"
+#include "shell.h"
 
+uint8_t iwdg_timer;
+
+void iwdg_callback(void);
 /* USER CODE END 0 */
 
 IWDG_HandleTypeDef hiwdg;
@@ -39,8 +44,8 @@ void MX_IWDG_Init(void)
   /* USER CODE END IWDG_Init 1 */
   hiwdg.Instance = IWDG;
   hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
-  hiwdg.Init.Window = 4095;
-  hiwdg.Init.Reload = 4095;
+  hiwdg.Init.Window = 511;
+  hiwdg.Init.Reload = 511;
   if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
   {
     Error_Handler();
@@ -52,7 +57,27 @@ void MX_IWDG_Init(void)
 }
 
 /* USER CODE BEGIN 1 */
+void iwdg_init(void)
+{
+  timer_create(&iwdg_timer, TIMER_TYPE_REPEAT, 2000, iwdg_callback);
+  timer_start(&iwdg_timer);
+}
 
+void iwdg_timer_start(void)
+{
+  timer_start(&iwdg_timer);
+}
+
+void iwdg_timer_stop(void)
+{
+  timer_stop(&iwdg_timer);
+}
+
+void iwdg_callback(void)
+{
+  HAL_IWDG_Refresh(&hiwdg);
+  //printf("#"); //printf("iwdg refresh!\r\n");
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

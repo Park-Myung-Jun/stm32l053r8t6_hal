@@ -16,6 +16,6 @@ typedef enum _te_low_power_type
 } te_low_power_type;
 
 void low_power_set(te_low_power_type type);
-te_low_power_type low_power_get(void);
+void low_power_operation(void);
 
 #endif /* low_power.h */

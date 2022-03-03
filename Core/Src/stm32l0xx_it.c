@@ -27,6 +27,7 @@
 #include "usart.h"
 #include "shell.h"
 #include "timer.h"
+#include "shell.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,7 +66,7 @@ extern RTC_HandleTypeDef hrtc;
 extern UART_HandleTypeDef huart2;
 extern WWDG_HandleTypeDef hwwdg;
 /* USER CODE BEGIN EV */
-
+interrupt_state interrupt = INTERRUPT_NONE;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -224,6 +225,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if(GPIO_Pin == BUTTON_BLUE_Pin)
   {
+    interrupt = INTERRUPT_OCUUR;
+
     button_interrupt_callback();
   }
 }
@@ -231,6 +234,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_SYSTICK_Callback(void)
 {
   
+}
+
+interrupt_state interrupt_get_state(void)
+{
+  return interrupt;
+}
+
+void interrupt_set_state(interrupt_state state)
+{
+  interrupt = state;
 }
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

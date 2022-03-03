@@ -74,6 +74,7 @@ void main_timer_start2(void);
 void main_timer_stop2(void);
 void main_timer_start3(void);
 void main_timer_stop3(void);
+void main_system_init(void);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
