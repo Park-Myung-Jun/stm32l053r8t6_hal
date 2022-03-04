@@ -40,6 +40,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#if 0
 typedef enum reset_cause
 {
     RESET_CAUSE_UNKNOWN = 0,
@@ -51,6 +52,7 @@ typedef enum reset_cause
     RESET_CAUSE_OPTION_BYTE_LOADER_RESET,
     RESET_CAUSE_EXTERNAL_RESET_PIN_RESET,
 } reset_cause_t;
+#endif
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -203,6 +205,12 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void main_macro_print(const char* file_name, const char* function_name, uint32_t line)
+{
+  printf("date : %s, time : %s, stdc : %d\r\n", __DATE__, __TIME__, __STDC__);
+  printf("file : %s, function : %s, line : %ld\r\n", file_name, function_name, line);
+}
+
 void main_timer_start(void)
 {
   timer_start(&main_timer);

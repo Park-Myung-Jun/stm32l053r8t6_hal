@@ -68,6 +68,7 @@ void Error_Handler(void);
 #define LED_GREEN_Pin GPIO_PIN_5
 #define LED_GREEN_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
+void main_macro_print(const char* file_name, const char* function_name, uint32_t line);
 void main_timer_start(void);
 void main_timer_stop(void);
 void main_timer_start2(void);

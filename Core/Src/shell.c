@@ -21,6 +21,7 @@ typedef struct _tsShellList {
   void (*func)(uint8_t, void*);
 } tsShellList;
 
+void cmd_test(uint8_t argc, void* argv);
 void cmd_led(uint8_t argc, void* argv);
 void cmd_timer(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
@@ -38,7 +39,26 @@ tsShellList cmd_list[] = {
   {"timer", cmd_timer},
   {"led", cmd_led},
   {"sleep", cmd_sleep},
+  {"test", cmd_test},
 };
+
+void cmd_test(uint8_t argc, void* argv)
+{
+	char** list = argv;
+
+	if(argc == 1)
+	{
+
+	}
+
+	if(argc == 2)
+  {
+    if(!strcmp("macro", list[1]))
+    {
+      main_macro_print(__FILE__, __FUNCTION__, __LINE__);
+    }
+  }
+}
 
 void cmd_sleep(uint8_t argc, void* argv)
 {
