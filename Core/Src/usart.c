@@ -122,11 +122,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-//https://modoocode.com/62
 void usart_init(void)
 {
-  setvbuf(stdout, NULL, _IONBF, 0);
-  HAL_UART_Receive_IT(&huart2, uart_rx, RX_SIZE);
+  setvbuf(stdout, NULL, _IONBF, 0); // https://modoocode.com/62
+  HAL_UART_Receive_IT(&huart2, uart_rx, RX_SIZE); // __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)

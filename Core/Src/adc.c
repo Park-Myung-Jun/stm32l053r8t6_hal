@@ -226,7 +226,6 @@ void ADC_Initialize(void)
 
   if (HAL_ADC_Stop(&hadc1) != HAL_OK)
   {
-    //dlog(ADCMOD, WARN, "ADC Stop FAIL\r\n");
     /* Error: ADC conversion start could not be performed */
     Error_Handler();
   }
@@ -234,7 +233,6 @@ void ADC_Initialize(void)
   /* Perform ADC calibration */
   if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED) != HAL_OK)
   {
-    //dlog(ADCMOD, WARN, "ADC Calibration FAIL\r\n");
     /* Calibration Error */
     Error_Handler();
   }
@@ -243,7 +241,6 @@ void ADC_Initialize(void)
   /* Note: First start with DMA transfer initialization, following ones with basic ADC start. */
   if (HAL_ADC_Start_DMA(&hadc1,(uint32_t *)adc_get_data, ADC_SIZE) != HAL_OK)
   {
-    //dlog(ADCMOD, WARN, "ADC DMA Start FAIL\r\n");
     /* Error: ADC conversion start could not be performed */
     Error_Handler();
   }
