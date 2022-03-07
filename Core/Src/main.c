@@ -36,6 +36,9 @@
 #include "usart.h"
 #include "timer.h"
 #include "low_power.h"
+#include "eeprom.h"
+#include "flash.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -130,6 +133,8 @@ int main(void)
   led_init();
   button_init();
   usart_init();
+  eeprom_init();
+  flash_init();
 
   printf("System reset cause: %s", main_reset_cause());
   __HAL_RCC_CLEAR_RESET_FLAGS();
