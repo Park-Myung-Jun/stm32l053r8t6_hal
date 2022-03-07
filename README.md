@@ -4,21 +4,29 @@
   * on/off
 * button exti, gpio input
   * push/pull
-* usart
-  * printf, transmit
+* shell
+  * usart
+    * printf, transmit
+    * history
+    * hash
+  * usb
+    * CDC
 * timer
   * systick callback
-* led + timer
-  * blink
-* led + tim
-  * dimming
+  * led + timer : blink, dimming
 * button + timer
-  * short, long key
+  * short, long, very long key
 * adc
-  * mcu temperature
-* flash
-* eeprom
-* custom bootloader
-* IWDG
+  * mcu temperature, vref
+  * monitor
+* NVM
+  * flash
+  * eeprom
+* Watch Dog
+  * IWDG
+  * WWDG
+* RTC
 * low power mode
   * sleep, stop, stand-by
+
+* custom bootloader

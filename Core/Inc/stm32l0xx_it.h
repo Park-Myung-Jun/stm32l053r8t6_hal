@@ -33,7 +33,11 @@
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+typedef enum _interrupt_state
+{
+  INTERRUPT_NONE,
+  INTERRUPT_OCUUR,
+} interrupt_state;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -52,11 +56,15 @@ void HardFault_Handler(void);
 void SVC_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
+void WWDG_IRQHandler(void);
+void RTC_IRQHandler(void);
 void EXTI4_15_IRQHandler(void);
 void DMA1_Channel1_IRQHandler(void);
+void ADC1_COMP_IRQHandler(void);
 void USART2_IRQHandler(void);
 /* USER CODE BEGIN EFP */
-
+interrupt_state interrupt_get_state(void);
+void interrupt_set_state(interrupt_state state);
 /* USER CODE END EFP */
 
 #ifdef __cplusplus

@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define SW_VERSION "v0.1.5"
+#define SW_VERSION "v0.1.6"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -68,12 +68,14 @@ void Error_Handler(void);
 #define LED_GREEN_Pin GPIO_PIN_5
 #define LED_GREEN_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
+void main_macro_print(const char* file_name, const char* function_name, uint32_t line);
 void main_timer_start(void);
 void main_timer_stop(void);
 void main_timer_start2(void);
 void main_timer_stop2(void);
 void main_timer_start3(void);
 void main_timer_stop3(void);
+void main_system_init(void);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

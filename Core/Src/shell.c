@@ -12,7 +12,9 @@
 #include "usart.h"
 #include "timer.h"
 #include "led.h"
+#include "low_power.h"
 
+#define HISTORY_SIZE 8
 #define BUFFER_MAX 64
 
 typedef struct _tsShellList {
@@ -20,12 +22,18 @@ typedef struct _tsShellList {
   void (*func)(uint8_t, void*);
 } tsShellList;
 
+void cmd_test(uint8_t argc, void* argv);
 void cmd_led(uint8_t argc, void* argv);
 void cmd_timer(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
 void cmd_version(uint8_t argc, void* argv);
 void cmd_reset(uint8_t argc, void* argv);
+void cmd_sleep(uint8_t argc, void* argv);
 void cmd_parse(void);
+void shell_arrow_operation(uint8_t rx);
+
+uint8_t shell_arrow_flag = 0, shell_history_pos = 0;
+char shell_history_buffer[HISTORY_SIZE][BUFFER_MAX];
 
 uint8_t buffer_idx = 0;
 char shell_buffer[BUFFER_MAX];
@@ -35,7 +43,36 @@ tsShellList cmd_list[] = {
   {"cls", cmd_clear},
   {"timer", cmd_timer},
   {"led", cmd_led},
+  {"sleep", cmd_sleep},
+  {"test", cmd_test},
 };
+
+void cmd_test(uint8_t argc, void* argv)
+{
+	char** list = argv;
+
+	if(argc == 1)
+	{
+
+	}
+
+	if(argc == 2)
+  {
+    if(!strcmp("macro", list[1]))
+    {
+      main_macro_print(__FILE__, __FUNCTION__, __LINE__);
+    }
+  }
+}
+
+void cmd_sleep(uint8_t argc, void* argv)
+{
+  if(argc == 1)
+  {
+    printf("shell sleep\r\n");
+    low_power_set(LOW_POWER_STOP);
+  }
+}
 
 void cmd_led(uint8_t argc, void* argv)
 {
@@ -168,6 +205,19 @@ void shell_operation(uint8_t rx)
       return;
     }
 
+    if(rx == '[')
+    {
+      shell_arrow_flag = 1;
+      return;
+    }
+
+    if(shell_arrow_flag == 1)
+    {
+      shell_arrow_operation(rx);
+      shell_arrow_flag = 0;
+      return;
+    }
+
     printf("%c", rx);
     shell_buffer[buffer_idx] = rx;
     buffer_idx++;
@@ -177,6 +227,8 @@ void shell_operation(uint8_t rx)
     printf(CRLF);
 
     cmd_parse();
+
+    // TO DO : save history
 
     memset(shell_buffer, 0, BUFFER_MAX);
     buffer_idx = 0;
@@ -237,10 +289,43 @@ void cmd_parse(void)
 // https://sinoroo.tistory.com/entry/STM32-HAL-UART-Receive
 int _write(int file, char *ptr, int len)
 {
+#if 0
   for(int i=0; i<len; i++)
   {
     HAL_UART_Transmit(&huart2, (uint8_t *)&ptr[i], 1, 0xFFFF); //HAL_UART_Transmit_IT(&huart2, (uint8_t*)ptr, len); -> error
   }
+#else
+  HAL_UART_Transmit(&huart2, (uint8_t *)ptr, len, 0xFFFF);
+#endif
 
   return len;
+}
+
+void shell_arrow_operation(uint8_t rx)
+{
+  switch(rx)
+  {
+    case 'A':
+      printf("up");
+      // TO DO : save history command
+      break;
+
+    case 'B':
+      printf("down");
+      // TO DO : save history command
+      break;
+
+#if 0
+    case 'C':
+      printf("right");
+      break;
+
+    case 'D':
+      printf("left");
+      break;
+#endif
+
+    default:
+      break;
+  }
 }
