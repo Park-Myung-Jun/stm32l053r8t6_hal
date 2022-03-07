@@ -12,6 +12,7 @@
 #include "usart.h"
 #include "timer.h"
 #include "led.h"
+#include "low_power.h"
 
 #define BUFFER_MAX 64
 
@@ -20,11 +21,13 @@ typedef struct _tsShellList {
   void (*func)(uint8_t, void*);
 } tsShellList;
 
+void cmd_test(uint8_t argc, void* argv);
 void cmd_led(uint8_t argc, void* argv);
 void cmd_timer(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
 void cmd_version(uint8_t argc, void* argv);
 void cmd_reset(uint8_t argc, void* argv);
+void cmd_sleep(uint8_t argc, void* argv);
 void cmd_parse(void);
 
 uint8_t buffer_idx = 0;
@@ -35,7 +38,36 @@ tsShellList cmd_list[] = {
   {"cls", cmd_clear},
   {"timer", cmd_timer},
   {"led", cmd_led},
+  {"sleep", cmd_sleep},
+  {"test", cmd_test},
 };
+
+void cmd_test(uint8_t argc, void* argv)
+{
+	char** list = argv;
+
+	if(argc == 1)
+	{
+
+	}
+
+	if(argc == 2)
+  {
+    if(!strcmp("macro", list[1]))
+    {
+      main_macro_print(__FILE__, __FUNCTION__, __LINE__);
+    }
+  }
+}
+
+void cmd_sleep(uint8_t argc, void* argv)
+{
+  if(argc == 1)
+  {
+    printf("shell sleep\r\n");
+    low_power_set(LOW_POWER_STOP);
+  }
+}
 
 void cmd_led(uint8_t argc, void* argv)
 {
