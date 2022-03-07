@@ -14,8 +14,8 @@
 #include "led.h"
 #include "low_power.h"
 
-#define HISTORY_SIZE 8
-#define BUFFER_MAX 64
+#define HISTORY_SIZE 6
+#define BUFFER_MAX 32
 
 typedef struct _tsShellList {
   char cmd[8];
@@ -31,8 +31,10 @@ void cmd_reset(uint8_t argc, void* argv);
 void cmd_sleep(uint8_t argc, void* argv);
 void cmd_parse(void);
 void shell_arrow_operation(uint8_t rx);
+void shell_history_save(void);
+void shell_print_history(void);
 
-uint8_t shell_arrow_flag = 0, shell_history_pos = 0;
+uint8_t shell_arrow_flag = 0, shell_history_pos = 0, shell_history_rear = 0, shell_history_front = 0;
 char shell_history_buffer[HISTORY_SIZE][BUFFER_MAX];
 
 uint8_t buffer_idx = 0;
@@ -61,6 +63,11 @@ void cmd_test(uint8_t argc, void* argv)
     if(!strcmp("macro", list[1]))
     {
       main_macro_print(__FILE__, __FUNCTION__, __LINE__);
+    }
+
+    if(!strcmp("history", list[1]))
+    {
+      shell_print_history();
     }
   }
 }
@@ -226,9 +233,9 @@ void shell_operation(uint8_t rx)
   {
     printf(CRLF);
 
-    cmd_parse();
+    shell_history_save(); // TO DO : save history
 
-    // TO DO : save history
+    cmd_parse();
 
     memset(shell_buffer, 0, BUFFER_MAX);
     buffer_idx = 0;
@@ -305,14 +312,20 @@ void shell_arrow_operation(uint8_t rx)
 {
   switch(rx)
   {
-    case 'A':
-      printf("up");
-      // TO DO : save history command
+    case 'A': //printf("up"); // TO DO : save history command
+      if(shell_history_pos == shell_history_rear)
+      {
+        return;
+      }
+      shell_history_pos = (shell_history_pos + HISTORY_SIZE - 1) % HISTORY_SIZE;
       break;
 
-    case 'B':
-      printf("down");
-      // TO DO : save history command
+    case 'B': //printf("down"); // TO DO : save history command
+      if(shell_history_pos == shell_history_front)
+      {
+        return;
+      }
+      shell_history_pos = (shell_history_pos + 1) % HISTORY_SIZE;
       break;
 
 #if 0
@@ -327,5 +340,39 @@ void shell_arrow_operation(uint8_t rx)
 
     default:
       break;
+  }
+
+  strcpy(shell_buffer, shell_history_buffer[shell_history_pos]);
+  printf("\e[1M\e[0G" PROMPT "%s", shell_history_buffer[shell_history_pos]);
+  buffer_idx = strlen(shell_history_buffer[shell_history_pos]);
+}
+
+void shell_history_save(void)
+{
+  if(shell_buffer[0] == '\0')
+  {
+    printf("string empty");
+    return;
+  }
+
+  if((shell_history_front + 1) % HISTORY_SIZE == shell_history_rear)
+  {
+    memset(shell_history_buffer[shell_history_rear], 0x00, BUFFER_MAX);
+    shell_history_rear = (shell_history_rear + 1) % HISTORY_SIZE;
+  }
+
+  strcpy(shell_history_buffer[shell_history_front], shell_buffer);
+  shell_history_front = (shell_history_front + 1) % HISTORY_SIZE;
+  shell_history_pos = shell_history_front;
+}
+
+void shell_print_history(void)
+{
+  uint8_t loop = shell_history_rear;
+
+  while(loop != shell_history_front)
+  {
+    printf("%s\r\n", shell_history_buffer[loop]);
+    loop = (loop + 1) % HISTORY_SIZE;
   }
 }
