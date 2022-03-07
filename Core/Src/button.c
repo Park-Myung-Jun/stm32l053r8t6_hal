@@ -17,7 +17,7 @@
 
 ts_button_t button;
 
-void button_timeout_oepration(void);
+void button_timeout_operation(void);
 void button_callback(void);
 
 void button_init(void)
@@ -100,7 +100,7 @@ void button_interrupt_callback(void)
   }
 }
 
-void button_timeout_oepration(void)
+void button_timeout_operation(void)
 {
   printf("press time end, short : %d, long : %d, very long : %d\r\n",
          button.short_count, button.long_count, button.very_long_count);
@@ -136,7 +136,7 @@ void button_callback(void)
     }
     else if (HAL_GetTick() - button.time_start > BUTTON_VERY_LONG_TIME)
     {
-      button_timeout();
+      button_timeout_operation();
       button.isTimeOut = true;
     }
   }
@@ -144,7 +144,7 @@ void button_callback(void)
   {
     if (HAL_GetTick() - button.time_start > BUTTON_SHORT_TIME)
     {
-      button_timeout();
+      button_timeout_operation();
     }
   }
 }
