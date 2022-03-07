@@ -32,6 +32,8 @@
 #include "button.h"
 #include "usart.h"
 #include "timer.h"
+#include "eeprom.h"
+#include "flash.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,6 +108,8 @@ int main(void)
   led_init();
   button_init();
   usart_init();
+  eeprom_init();
+  flash_init();
 
   printf(CRLF SHELL_GREEN "[system] " SHELL_RESET "Module init end");
   printf(CRLF SHELL_GREEN "[version] " SHELL_RESET "SW_VERSION : %s\r\n" PROMPT, SW_VERSION);
