@@ -14,8 +14,11 @@
 #include "led.h"
 #include "low_power.h"
 
+#define HASH_DIGIT 27
 #define HISTORY_SIZE 6
 #define BUFFER_MAX 32
+
+#define USE_HASH_CHECK 0
 
 typedef struct _tsShellList {
   char cmd[8];
@@ -33,6 +36,13 @@ void cmd_parse(void);
 void shell_arrow_operation(uint8_t rx);
 void shell_history_save(void);
 void shell_print_history(void);
+uint32_t shell_hashing(char* str);
+
+#if USE_HASH_CHECK
+void shell_decode(uint32_t hash);
+
+char hash_decode[BUFFER_MAX] = {0};
+#endif
 
 uint8_t shell_arrow_flag = 0, shell_history_pos = 0, shell_history_rear = 0, shell_history_front = 0;
 char shell_history_buffer[HISTORY_SIZE][BUFFER_MAX];
@@ -53,11 +63,6 @@ void cmd_test(uint8_t argc, void* argv)
 {
 	char** list = argv;
 
-	if(argc == 1)
-	{
-
-	}
-
 	if(argc == 2)
   {
     if(!strcmp("macro", list[1]))
@@ -70,6 +75,27 @@ void cmd_test(uint8_t argc, void* argv)
       shell_print_history();
     }
   }
+
+	if(argc == 3)
+	{
+	  if(!strcmp("hash", list[1]))
+    {
+      uint32_t hashing_value = shell_hashing(list[2]);
+
+      if(hashing_value == (uint32_t)-1)
+      {
+        printf("6 digit limit\r\n");
+      }
+      else
+      {
+        printf("%ld\r\n", hashing_value);
+#if USE_HASH_CHECK
+        shell_decode(hashing_value);
+        printf("decode : %s\r\n", hash_decode);
+#endif
+      }
+    }
+	}
 }
 
 void cmd_sleep(uint8_t argc, void* argv)
@@ -351,8 +377,7 @@ void shell_history_save(void)
 {
   if(shell_buffer[0] == '\0')
   {
-    printf("string empty");
-    return;
+    return; //printf("string empty");
   }
 
   if((shell_history_front + 1) % HISTORY_SIZE == shell_history_rear)
@@ -376,3 +401,38 @@ void shell_print_history(void)
     loop = (loop + 1) % HISTORY_SIZE;
   }
 }
+
+uint32_t shell_hashing(char* str)
+{
+	uint8_t i, str_len = strlen(str);
+	uint32_t hash_ret = 0;
+
+	if(str_len > 6)
+	{
+	  return (uint32_t)-1;
+	}
+
+  for(i = 0; i < str_len; i++)
+  {
+    hash_ret = hash_ret * HASH_DIGIT;
+    hash_ret = hash_ret + (str[i] - 0x60);
+  }
+
+	return hash_ret;
+}
+
+#if USE_HASH_CHECK
+void shell_decode(uint32_t hash)
+{
+  uint8_t i = 0;
+
+  while(hash != 0)
+  {
+    hash_decode[i] = (hash % HASH_DIGIT) + 0x60;
+    hash = hash / HASH_DIGIT;
+    i++;
+  }
+
+  // Need reverse string
+}
+#endif
