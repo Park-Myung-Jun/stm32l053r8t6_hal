@@ -136,7 +136,7 @@ void button_callback(void)
     }
     else if (HAL_GetTick() - button.time_start > BUTTON_VERY_LONG_TIME)
     {
-      button_timeout();
+      button_timeout_oepration();
       button.isTimeOut = true;
     }
   }
@@ -144,7 +144,7 @@ void button_callback(void)
   {
     if (HAL_GetTick() - button.time_start > BUTTON_SHORT_TIME)
     {
-      button_timeout();
+      button_timeout_oepration();
     }
   }
 }

@@ -21,6 +21,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "lptim.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -101,6 +102,7 @@ int main(void)
   MX_ADC_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
+  MX_LPTIM1_Init();
   /* USER CODE BEGIN 2 */
   timer_init();
   led_init();
@@ -117,8 +119,20 @@ int main(void)
   timer_create(&main_timer2, TIMER_TYPE_REPEAT, 333, main_callback2);
   timer_create(&main_timer3, TIMER_TYPE_REPEAT, 777, main_callback3);
 
+  lptim_start();
+
   while (1)
   {
+    GPIO_PinState read_pin = HAL_GPIO_ReadPin(LPTIM_INPUT_CHECK_GPIO_Port, LPTIM_INPUT_CHECK_Pin);
+
+    if(read_pin == GPIO_PIN_SET)
+    {
+      led_on();
+    }
+    else if(read_pin == GPIO_PIN_RESET)
+    {
+      led_off();
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -166,8 +180,10 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_LPTIM1;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.LptimClockSelection = RCC_LPTIM1CLKSOURCE_PCLK;
+
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();

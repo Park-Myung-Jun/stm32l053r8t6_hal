@@ -67,6 +67,10 @@ void Error_Handler(void);
 #define UART_RX_GPIO_Port GPIOA
 #define LED_GREEN_Pin GPIO_PIN_5
 #define LED_GREEN_GPIO_Port GPIOA
+#define LPTIM_INPUT_CHECK_Pin GPIO_PIN_1
+#define LPTIM_INPUT_CHECK_GPIO_Port GPIOB
+#define LPTIM_Pin GPIO_PIN_2
+#define LPTIM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 void main_timer_start(void);
 void main_timer_stop(void);
