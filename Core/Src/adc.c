@@ -26,6 +26,13 @@
 #define ADC_SIZE 2
 #define ADC_COUNT_SIZE 10
 
+#define TEMP_CAL_30_ADDR   ((uint16_t*) ((uint32_t) 0x1FF8007A))
+#define TEMP_CAL_130_ADDR  ((uint16_t*) ((uint32_t) 0x1FF8007E))
+
+
+uint32_t adc_get_mcu_temperature(void);
+uint32_t adc_get_reference_voltage(void);
+
 void adc_bubble_sort(uint16_t* data_arr);
 uint16_t adc_sort_data(uint16_t* adc_arr);
 
@@ -156,6 +163,25 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+uint16_t adc_get_mcu_temperature(void)
+{
+	//(uint32_t)adc_avg_data[0] * 3000 / 4096;
+
+	uint32_t mcu_temp = (uint32_t)adc_avg_data[0] - (int32_t)*TEMP_CAL_30_ADDR;
+	mcu_temp = mcu_temp * (int32_t)(130 - 30);
+	mcu_temp = mcu_temp / (int32_t)(*TEMP_CAL_130_ADDR - *TEMP_CAL_30_ADDR);
+	mcu_temp = mcu_temp + 30;
+
+	return (uint16_t)mcu_temp;
+}
+
+uint16_t adc_get_reference_voltage(void)
+{
+	uint16_t ref_vol;
+
+	return ref_vol;
+}
+
 void adc_bubble_sort(uint16_t* data_arr)
 {
   uint8_t i, j;
