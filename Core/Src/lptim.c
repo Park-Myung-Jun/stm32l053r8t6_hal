@@ -113,7 +113,7 @@ void HAL_LPTIM_MspDeInit(LPTIM_HandleTypeDef* lptimHandle)
 /* USER CODE BEGIN 1 */
 void lptim_start(void)
 {
-  HAL_LPTIM_PWM_Start(&hlptim1, 50000 - 1, 25000);
+  HAL_LPTIM_PWM_Start(&hlptim1, 50000 - 1, 0);
 }
 
 void lptim_stop(void)

@@ -12,6 +12,7 @@
 #include "usart.h"
 #include "timer.h"
 #include "led.h"
+#include "lptim.h"
 
 #define BUFFER_MAX 64
 
@@ -20,6 +21,7 @@ typedef struct _tsShellList {
   void (*func)(uint8_t, void*);
 } tsShellList;
 
+void cmd_lptim(uint8_t argc, void* argv);
 void cmd_led(uint8_t argc, void* argv);
 void cmd_timer(uint8_t argc, void* argv);
 void cmd_clear(uint8_t argc, void* argv);
@@ -35,7 +37,27 @@ tsShellList cmd_list[] = {
   {"cls", cmd_clear},
   {"timer", cmd_timer},
   {"led", cmd_led},
+  {"lpt", cmd_lptim}
 };
+
+void cmd_lptim(uint8_t argc, void* argv)
+{
+  char** list = argv;
+
+  if(argc == 2)
+  {
+    if(!strcmp("start", list[1]))
+    {
+      lptim_start();
+    }
+    else if(!strcmp("stop", list[1]))
+    {
+      lptim_stop();
+    }
+  }
+
+  return;
+}
 
 void cmd_led(uint8_t argc, void* argv)
 {
